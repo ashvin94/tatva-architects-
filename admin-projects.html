@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tatva Admin Projects</title>
+    <link rel="icon" href="logo.jpg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <section class="dashboard" id="dashboard">
+      <aside class="sidebar">
+        <h2>Tatva Admin</h2>
+        <nav>
+          <a href="admin-projects.html">Projects</a>
+        </nav>
+        <button id="logout-btn">Logout</button>
+      </aside>
+      <main class="content">
+        <h2>Add / Edit Project</h2>
+        <form id="project-form" class="project-form">
+          <input type="hidden" id="project-id" />
+          <label>Project Name<input type="text" id="project-name" required /></label>
+          <label>Cover Image Upload<input type="file" id="project-image-file" accept="image/*" /></label>
+          <label>Or Cover Image URL<input type="url" id="project-image" /></label>
+          <img id="image-preview" class="image-preview hidden" alt="Preview" />
+          <label>Gallery Images Upload (multiple)
+            <input type="file" id="project-gallery-files" accept="image/*" multiple />
+            <small style="color:#666;display:block;margin-top:4px">Select multiple photos for the project carousel. The cover image above is always shown first.</small>
+          </label>
+          <label>Or Gallery Image URLs (one per line)
+            <textarea
+              id="project-gallery-urls"
+              rows="3"
+              placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg&#10;https://example.com/photo3.jpg"
+            ></textarea>
+          </label>
+          <div id="gallery-preview" class="gallery-preview"></div>
+          <label>Location<input type="text" id="project-location" required /></label>
+          <label
+            >Status
+            <select id="project-status">
+              <option>Completed</option>
+              <option>Ongoing</option>
+            </select>
+          </label>
+          <label
+            >Description
+            <textarea id="project-description" rows="4" required></textarea>
+          </label>
+          <label
+            >Long Description
+            <textarea
+              id="project-long-description"
+              rows="5"
+              placeholder="Detailed content for Read More section"
+            ></textarea>
+          </label>
+          <label
+            >Video Links (one per line)
+            <textarea
+              id="project-video-urls"
+              rows="3"
+              placeholder="https://youtube.com/...&#10;https://drive.google.com/..."
+            ></textarea>
+          </label>
+          <label
+            >Upload Media (PDF / Images / Other)
+            <input
+              type="file"
+              id="project-media-files"
+              multiple
+              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+            />
+          </label>
+          <label
+            >Or Media Links (one per line)
+            <textarea
+              id="project-media-urls"
+              rows="3"
+              placeholder="https://example.com/file.pdf&#10;https://drive.google.com/..."
+            ></textarea>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="project-is-collaboration" />
+            This project is collaborated with another company
+          </label>
+          <label
+            >Collaboration Company Name
+            <input
+              type="text"
+              id="project-collab-company-name"
+              placeholder="Enter company name"
+            />
+          </label>
+          <label
+            >Collaboration Company Logo URL
+            <input
+              type="url"
+              id="project-collab-company-logo"
+              placeholder="https://example.com/company-logo.png"
+            />
+          </label>
+          <label
+            >Collaboration Company Website
+            <input
+              type="url"
+              id="project-collab-company-site"
+              placeholder="https://companysite.com"
+            />
+          </label>
+          <button type="submit">Save Project</button>
+        </form>
+
+        <h2>Existing Projects</h2>
+        <div id="project-list" class="project-list"></div>
+      </main>
+    </section>
+
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>
