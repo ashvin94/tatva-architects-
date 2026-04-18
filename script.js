@@ -728,6 +728,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const target = href ? document.querySelector(href) : null;
     if (!target) return;
     event.preventDefault();
+    if (mainNavMobile) mainNavMobile.classList.add("hidden");
     const headerOffset = headerEl ? headerEl.offsetHeight + NAV_SCROLL_EXTRA : 100;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });
@@ -771,10 +772,10 @@ document.querySelectorAll('.main-nav a[href^="#"]').forEach((link) => {
     const target = href ? document.querySelector(href) : null;
     if (!target) return;
     event.preventDefault();
+    if (mainNavMobile) mainNavMobile.classList.add("hidden");
     const headerOffset = headerEl ? headerEl.offsetHeight + NAV_SCROLL_EXTRA : 100;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });
-    if (mainNavMobile) mainNavMobile.classList.add("hidden");
   });
 });
 
@@ -784,10 +785,10 @@ document.querySelectorAll('#main-nav-mobile a[href^="#"]').forEach((link) => {
     const target = href ? document.querySelector(href) : null;
     if (!target) return;
     event.preventDefault();
+    if (mainNavMobile) mainNavMobile.classList.add("hidden");
     const headerOffset = headerEl ? headerEl.offsetHeight + NAV_SCROLL_EXTRA : 100;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });
-    if (mainNavMobile) mainNavMobile.classList.add("hidden");
   });
 });
 
