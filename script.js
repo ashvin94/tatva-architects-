@@ -5,8 +5,7 @@ const yearEl = document.getElementById("year");
 const contactForm = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 const headerEl = document.querySelector(".site-header");
-const completedPanel = document.getElementById("completed-panel");
-const ongoingPanel = document.getElementById("ongoing-panel");
+const projectsPanel = document.getElementById("projects-panel");
 const projectModal = document.getElementById("project-modal");
 const modalClose = document.getElementById("modal-close");
 const modalProjectImage = document.getElementById("modal-project-image");
@@ -23,12 +22,8 @@ const tabs = document.querySelectorAll(".tab-btn");
 const hero = document.querySelector(".hero");
 const heroLayerA = document.querySelector(".hero-bg-a");
 const heroLayerB = document.querySelector(".hero-bg-b");
-const completedPrev = document.getElementById("completed-prev");
-const completedNext = document.getElementById("completed-next");
-const ongoingPrev = document.getElementById("ongoing-prev");
-const ongoingNext = document.getElementById("ongoing-next");
-const completedControls = document.getElementById("completed-controls");
-const ongoingControls = document.getElementById("ongoing-controls");
+const projectsPrev = document.getElementById("projects-prev");
+const projectsNext = document.getElementById("projects-next");
 
 // Modal carousel elements
 const modalCarousel = document.getElementById("modal-carousel");
@@ -71,16 +66,10 @@ window.__scriptLoaded = true;
 
 // Ensure initial portfolio UI state is consistent on first load.
 // (Sometimes classes can get out of sync after hot reloads or partial refreshes.)
-if (completedPanel && ongoingPanel) {
+if (projectsPanel) {
   tabs.forEach((item) => item.classList.remove("active"));
-  const completedTab = document.querySelector('.tab-btn[data-tab="completed"]');
-  completedTab?.classList.add("active");
-  completedPanel.classList.add("active");
-  completedPanel.classList.remove("hidden");
-  ongoingPanel.classList.remove("active");
-  ongoingPanel.classList.add("hidden");
-  completedControls?.classList.remove("hidden");
-  ongoingControls?.classList.add("hidden");
+  const defaultTab = document.querySelector('.tab-btn[data-tab="residential design"]');
+  defaultTab?.classList.add("active");
 }
 
 const supabaseUrl = window.SUPABASE_URL;
@@ -328,12 +317,11 @@ const renderCollaborations = (projects) => {
 };
 
 const renderProjects = (projects) => {
-  if (!completedPanel || !ongoingPanel) return;
+  if (!projectsPanel) return;
   try {
     currentProjects = projects;
     renderCollaborations(projects);
-    completedPanel.innerHTML = "";
-    ongoingPanel.innerHTML = "";
+    projectsPanel.innerHTML = "";
 
   const createCard = (project) => {
     const status = String(project.status || "").trim();
@@ -450,47 +438,27 @@ const renderProjects = (projects) => {
     `;
   };
 
-  const completed = projects.filter(
-    (item) => String(item?.status || "").trim().toLowerCase() === "completed"
-  );
-  const ongoing = projects.filter(
-    (item) => String(item?.status || "").trim().toLowerCase() === "ongoing"
+  const activeTab = document.querySelector(".tab-btn.active")?.dataset?.tab || "residential design";
+  const filteredProjects = projects.filter(
+    (item) => String(item?.status || "").trim().toLowerCase() === activeTab.toLowerCase()
   );
 
   const hasProjects = Array.isArray(projects) && projects.length > 0;
-  const hasAnyInTabs = completed.length > 0 || ongoing.length > 0;
+  
   const fallbackAll =
-    hasProjects && !hasAnyInTabs
-      ? `<div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-           Projects loaded, but none match status <strong>Completed</strong> / <strong>Ongoing</strong>.
-           Please set the project status in admin to Completed or Ongoing.
-         </div>
-         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-           ${projects.map((p) => createCard(p)).join("")}
+    hasProjects && filteredProjects.length === 0
+      ? `<div class="w-full text-center text-slate-600 py-10 w-full col-span-full">
+           Projects loaded, but no projects match the <strong>${escapeHtml(activeTab)}</strong> category.
          </div>`
       : "";
 
-  completedPanel.innerHTML =
-    completed.map((p) => createCard(p)).join("") ||
+  projectsPanel.innerHTML =
+    filteredProjects.map((p) => createCard(p)).join("") ||
     fallbackAll ||
-    '<p class="text-slate-600">No completed projects yet.</p>';
-  ongoingPanel.innerHTML =
-    ongoing.map((p) => createCard(p)).join("") ||
-    '<p class="text-slate-600">No ongoing projects right now.</p>';
-
-  // Ensure correct tab/panel visibility even if classes got out of sync.
-  const activeTab = document.querySelector(".tab-btn.active")?.dataset?.tab;
-  const showCompleted = activeTab !== "ongoing";
-  completedPanel.classList.toggle("active", showCompleted);
-  ongoingPanel.classList.toggle("active", !showCompleted);
-  completedPanel.classList.toggle("hidden", !showCompleted);
-  ongoingPanel.classList.toggle("hidden", showCompleted);
-  completedControls?.classList.toggle("hidden", !showCompleted);
-  ongoingControls?.classList.toggle("hidden", showCompleted);
+    '<p class="text-slate-600 col-span-full py-10 w-full text-center">No projects in this category yet.</p>';
 
   // Initialize card carousels via event delegation
-  initCardCarousels(completedPanel);
-  initCardCarousels(ongoingPanel);
+  initCardCarousels(projectsPanel);
 
   document.querySelectorAll(".read-more-btn").forEach((button) => {
     button.addEventListener("click", () => {
@@ -650,8 +618,8 @@ const initSupabaseAndProjects = async () => {
 
   if (!supabaseClient) {
     window.__projects = null;
-    if (completedPanel) {
-      completedPanel.innerHTML =
+    if (projectsPanel) {
+      projectsPanel.innerHTML =
         '<div class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">Supabase is not initialized on the website. Check `supabase-config.js` is loaded before `script.js` and that `SUPABASE_URL` + `SUPABASE_ANON_KEY` are set.</div>';
     }
     renderProjects((cachedProjects && cachedProjects.length ? cachedProjects : sampleProjects));
@@ -674,9 +642,9 @@ const initSupabaseAndProjects = async () => {
   } catch (error) {
     console.error("Supabase fetch failed:", error);
     window.__projects = null;
-    if (completedPanel) {
-      completedPanel.innerHTML =
-        '<div class="text-slate-600">Unable to load projects from Supabase. Check RLS SELECT policy for role <strong>anon</strong>.</div>';
+    if (projectsPanel) {
+      projectsPanel.innerHTML =
+        '<div class="text-slate-600 col-span-full text-center">Unable to load projects from Supabase. Check RLS SELECT policy for role <strong>anon</strong>.</div>';
     }
     renderProjects((cachedProjects && cachedProjects.length ? cachedProjects : sampleProjects));
   }
@@ -739,30 +707,16 @@ menuToggle?.addEventListener("click", () => {
   if (mainNavMobile) mainNavMobile.classList.toggle("hidden");
 });
 
-completedPrev?.addEventListener("click", () =>
-  scrollProjectsRow(completedPanel, -1)
-);
-completedNext?.addEventListener("click", () =>
-  scrollProjectsRow(completedPanel, 1)
-);
-ongoingPrev?.addEventListener("click", () =>
-  scrollProjectsRow(ongoingPanel, -1)
-);
-ongoingNext?.addEventListener("click", () =>
-  scrollProjectsRow(ongoingPanel, 1)
-);
+projectsPrev?.addEventListener("click", () => scrollProjectsRow(projectsPanel, -1));
+projectsNext?.addEventListener("click", () => scrollProjectsRow(projectsPanel, 1));
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     tabs.forEach((item) => item.classList.remove("active"));
     tab.classList.add("active");
-    const isCompleted = tab.dataset.tab === "completed";
-    completedPanel?.classList.toggle("active", isCompleted);
-    ongoingPanel?.classList.toggle("active", !isCompleted);
-    completedPanel?.classList.toggle("hidden", !isCompleted);
-    ongoingPanel?.classList.toggle("hidden", isCompleted);
-    completedControls?.classList.toggle("hidden", !isCompleted);
-    ongoingControls?.classList.toggle("hidden", isCompleted);
+    if (currentProjects) {
+      renderProjects(currentProjects);
+    }
   });
 });
 
