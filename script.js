@@ -720,6 +720,24 @@ tabs.forEach((tab) => {
   });
 });
 
+// Theme Toggle Logic
+const themeToggles = document.querySelectorAll('.theme-toggle');
+
+const toggleTheme = () => {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+};
+
+themeToggles.forEach(btn => btn.addEventListener('click', toggleTheme));
+
+// Initial Theme Check
+if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+} else {
+  document.documentElement.classList.remove('dark');
+}
+
 document.querySelectorAll('.main-nav a[href^="#"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     const href = link.getAttribute("href");
